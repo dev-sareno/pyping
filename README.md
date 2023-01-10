@@ -1,6 +1,12 @@
 # pyping
 Python simple program that connect and call simple query to a Postgres database; useful for testing your application if it can reach the database
 
+## SQL
+Query to run
+```sql
+SELECT NOW(), VERSION();
+```
+
 ## Environment
 ```shell
 $ pyenv local 3.8.13
@@ -17,4 +23,13 @@ $ pip install requirements.txt
 $ export APP_DB_CONNECTION_STRING="postgres://username:password@localhost:5432/mydb"
 $ export APP_LOOP_INTERVAL_SECONDS="3"
 $ python main.py
+```
+
+## Run Docker
+```shell
+$ docker run \
+    --rm -ti \
+    -e APP_DB_CONNECTION_STRING="postgres://username:password@localhost:5432/mydb" \
+    -e APP_LOOP_INTERVAL_SECONDS="3" \
+    devsareno/pyping
 ```
