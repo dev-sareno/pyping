@@ -38,6 +38,7 @@ def main():
         
 
     while True:
+        conn = None
         try:
             # Connect to your postgres DB
             conn = psycopg2.connect(db_conn)
@@ -50,19 +51,23 @@ def main():
 
             row = cur.fetchone()
             print(f"result:\n{row}")
-
-            # sleep
-            time.sleep(loop_iterval)
-        except Exception as e:
-            print(f"unhandled error: {e}")
+        except psycopg2.OperationalError as e:
+            print_error(f"database connection failed.\n{e}")
             continue
-        except KeyboardInterrupt:
-            print(f"cancelled by user")
-            break
+        except Exception as e:
+            print_error(f"unhandled error: {e}")
+            continue
         finally:
             if conn is not None:
                 conn.close()
                 print(f"db disconected")
+
+            try:
+                # sleep
+                time.sleep(loop_iterval)
+            except KeyboardInterrupt:
+                print(f"cancelled by user")
+                break
 
 if __name__ == "__main__":
     main()
