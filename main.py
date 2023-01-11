@@ -28,7 +28,7 @@ def main():
     db_password = os.environ.get(env_db_password)
     db_dbname = os.environ.get(env_db_dbname)
     if None in (db_host, db_username, db_password, db_dbname):
-        print_error(f"env variables {db_host}, {db_username}, {db_password}, and {db_dbname} are required")
+        print_error(f"env variables {env_db_host}, {env_db_username}, {env_db_password}, and {env_db_dbname} are required")
         exit(1)
 
     db_conn: str = f"postgres://{db_username}:{db_password}@{db_host}:{db_port}/{db_dbname}"
