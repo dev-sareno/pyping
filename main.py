@@ -2,7 +2,11 @@ import psycopg2
 import os, sys, time
 
 
-env_db_connection_string: str = "APP_DB_CONNECTION_STRING"
+env_db_host: str = "APP_DB_HOST"
+env_db_port: str = "APP_DB_PORT"
+env_db_username: str = "APP_DB_USERNAME"
+env_db_password: str = "APP_DB_PASSWORD"
+env_db_dbname: str = "APP_DB_DBNAME"
 env_loop_interval: str = "APP_LOOP_INTERVAL_SECONDS"
 
 
@@ -18,10 +22,16 @@ def print_error(*args, **kwargs):
 
 
 def main():
-    db_conn = os.environ.get(env_db_connection_string)
-    if db_conn is None:
-        print_error(f"env {env_db_connection_string} is required")
+    db_host = os.environ.get(env_db_host)
+    db_port = os.environ.get(env_db_port, "5432")
+    db_username = os.environ.get(env_db_username)
+    db_password = os.environ.get(env_db_password)
+    db_dbname = os.environ.get(env_db_dbname)
+    if None in (db_host, db_username, db_password, db_dbname):
+        print_error(f"env variables {db_host}, {db_username}, {db_password}, and {db_dbname} are required")
         exit(1)
+
+    db_conn: str = f"postgres://{db_username}:{db_password}@{db_host}:{db_port}/{db_dbname}"
     
     loop_iterval_str = os.environ.get(env_loop_interval)
     loop_iterval: int = 0
