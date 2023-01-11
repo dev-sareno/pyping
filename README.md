@@ -20,7 +20,11 @@ $ pip install requirements.txt
 
 ## Run
 ```shell
-$ export APP_DB_CONNECTION_STRING="postgres://username:password@localhost:5432/mydb"
+$ export APP_DB_HOST="localhost"
+$ export APP_DB_PORT="5432"
+$ export APP_DB_USERNAME="username"
+$ export APP_DB_PASSWORD="password"
+$ export APP_DB_DBNAME="mydb"
 $ export APP_LOOP_INTERVAL_SECONDS="3"
 $ python main.py
 ```
@@ -29,7 +33,11 @@ $ python main.py
 ```shell
 $ docker run \
     --rm -ti \
-    -e APP_DB_CONNECTION_STRING="postgres://username:password@localhost:5432/mydb" \
+    -e APP_DB_HOST="localhost" \
+    -e APP_DB_PORT="5432" \
+    -e APP_DB_USERNAME="username" \
+    -e APP_DB_PASSWORD="password" \
+    -e APP_DB_DBNAME="mydb" \
     -e APP_LOOP_INTERVAL_SECONDS="3" \
     devsareno/pyping
 ```
