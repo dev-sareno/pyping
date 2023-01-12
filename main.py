@@ -6,6 +6,7 @@ env_db_host: str = "APP_DB_HOST"
 env_db_port: str = "APP_DB_PORT"
 env_db_username: str = "APP_DB_USERNAME"
 env_db_password: str = "APP_DB_PASSWORD"
+env_db_password_file: str = "APP_DB_PASSWORD_FILE"
 env_db_dbname: str = "APP_DB_DBNAME"
 env_loop_interval: str = "APP_LOOP_INTERVAL_SECONDS"
 
@@ -26,12 +27,15 @@ def main():
     db_port = os.environ.get(env_db_port, "5432")
     db_username = os.environ.get(env_db_username)
     db_password = os.environ.get(env_db_password)
+    db_password_file = os.environ.get(env_db_password_file)
     db_dbname = os.environ.get(env_db_dbname)
-    if None in (db_host, db_username, db_password, db_dbname):
-        print_error(f"env variables {env_db_host}, {env_db_username}, {env_db_password}, and {env_db_dbname} are required")
-        exit(1)
+    
+    dbpassword: str = db_password
+    if db_password_file is not None:
+        with open(db_password_file) as f:
+            dbpassword = f.read()
 
-    db_conn: str = f"postgres://{db_username}:{db_password}@{db_host}:{db_port}/{db_dbname}"
+    db_conn: str = f"postgres://{db_username}:{dbpassword}@{db_host}:{db_port}/{db_dbname}"
     
     loop_iterval_str = os.environ.get(env_loop_interval)
     loop_iterval: int = 0
@@ -48,6 +52,7 @@ def main():
         
 
     while True:
+        print(f"connection string: {db_conn}")
         conn = None
         try:
             # Connect to your postgres DB
