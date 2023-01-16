@@ -23,8 +23,11 @@ $ pip install requirements.txt
 $ export APP_DB_HOST="localhost"
 $ export APP_DB_PORT="5432"
 $ export APP_DB_USERNAME="username"
-$ export APP_DB_PASSWORD="password"
+$ #export APP_DB_PASSWORD="password"
+$ export APP_DB_PASSWORD_FILE="/var/run/secrets/app/password.txt"
 $ export APP_DB_DBNAME="mydb"
+$ export APP_DB_SSL_MODE="verify-full"
+$ export APP_DB_SSL_ROOT_CERT_FILE="/var/run/secrets/app/password.txt"
 $ export APP_LOOP_INTERVAL_SECONDS="3"
 $ python main.py
 ```
@@ -33,6 +36,7 @@ $ python main.py
 ```shell
 $ docker run \
     --rm -ti \
+    --pull=always \
     -e APP_DB_HOST="localhost" \
     -e APP_DB_PORT="5432" \
     -e APP_DB_USERNAME="username" \
