@@ -8,7 +8,9 @@ env_db_username: str = "APP_DB_USERNAME"
 env_db_password: str = "APP_DB_PASSWORD"
 env_db_password_file: str = "APP_DB_PASSWORD_FILE"
 env_db_dbname: str = "APP_DB_DBNAME"
-env_loop_interval: str = "APP_LOOP_INTERVAL_SECONDS"
+env_db_ssl_mode: str = "APP_DB_SSL_MODE"
+env_db_ssl_root_cert_file: str = "APP_DB_SSL_ROOT_CERT_FILE"
+env_db_loop_interval: str = "APP_LOOP_INTERVAL_SECONDS"
 
 
 def float_try_parse(value):
@@ -29,30 +31,47 @@ def main():
     db_password = os.environ.get(env_db_password)
     db_password_file = os.environ.get(env_db_password_file)
     db_dbname = os.environ.get(env_db_dbname)
-    
-    dbpassword: str = db_password
-    if db_password_file is not None:
-        with open(db_password_file) as f:
-            dbpassword = f.read()
+    db_ssl_mode = os.environ.get(env_db_ssl_mode)
+    db_ssl_root_cert_file = os.environ.get(env_db_ssl_root_cert_file)
+    loop_interval = os.environ.get(env_db_loop_interval, "5")
 
-    db_conn: str = f"postgres://{db_username}:{dbpassword}@{db_host}:{db_port}/{db_dbname}"
-    
-    loop_iterval_str = os.environ.get(env_loop_interval)
-    loop_iterval: int = 0
-    if loop_iterval_str is None:
-        print_error(f"env {env_loop_interval} is required")
+    if None in (db_host, db_username):
+        print_error("host and usernanme are required")
         exit(1)
-    else:
-        # validate int
-        val, valid = float_try_parse(loop_iterval_str)
-        if not valid:
-            print_error(f"env {env_loop_interval} must be a valid integer")
-            exit(1)
-        loop_iterval = val
-        
 
+    builder = [
+        f"host={db_host}",
+        f"port={db_port}",
+        f"user={db_username}",
+        f"dbname={db_dbname}",
+    ]
+
+    if db_password:
+        builder.append(f"password={db_password}")
+    elif db_password_file:
+        with open(db_password_file) as f:
+            dbpassword: str = f.read()
+        builder.append(f"password={dbpassword}")
+    else:
+        print_error("password is required")
+        exit(1)
+
+    if db_ssl_mode:
+        builder.append(f"sslmode={db_ssl_mode}")
+    
+    if db_ssl_root_cert_file:
+        builder.append(f"sslrootcert={db_ssl_root_cert_file}")
+
+    db_conn: str = " ".join(builder)
+    
+    # validate int
+    loop_iterval, valid = float_try_parse(loop_interval)
+    if not valid:
+        print_error(f"env {env_db_loop_interval} must be a valid integer")
+        exit(1)
+        
     while True:
-        print(f"connection string: {db_conn}")
+        print(f"connection string: `{db_conn}`")
         conn = None
         try:
             # Connect to your postgres DB
@@ -65,7 +84,8 @@ def main():
             cur.execute("SELECT NOW(), VERSION();")
 
             row = cur.fetchone()
-            print(f"result:\n{row}")
+            print("db connected!")
+            print(f"result:  {(row[0].isoformat(), row[1])}")
         except psycopg2.OperationalError as e:
             print_error(f"database connection failed.\n{e}")
             continue
@@ -75,7 +95,7 @@ def main():
         finally:
             if conn is not None:
                 conn.close()
-                print(f"db disconected")
+                print(f"db disconected.")
 
             try:
                 # sleep
