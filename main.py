@@ -70,13 +70,13 @@ def main():
         print_error(f"env {env_db_loop_interval} must be a valid integer")
         exit(1)
         
-    while True:
-        print(f"connection string: `{db_conn}`")
-        conn = None
-        try:
-            # Connect to your postgres DB
-            conn = psycopg2.connect(db_conn)
+    print(f"connection string: `{db_conn}`")
+    conn = None
+    try:
+        # Connect to your postgres DB
+        conn = psycopg2.connect(db_conn)
 
+        while True:
             # Open a cursor to perform database operations
             cur = conn.cursor()
 
@@ -86,16 +86,6 @@ def main():
             row = cur.fetchone()
             print("db connected!")
             print(f"result:  {(row[0].isoformat(), row[1])}")
-        except psycopg2.OperationalError as e:
-            print_error(f"database connection failed.\n{e}")
-            continue
-        except Exception as e:
-            print_error(f"unhandled error: {e}")
-            continue
-        finally:
-            if conn is not None:
-                conn.close()
-                print(f"db disconected.")
 
             try:
                 # sleep
@@ -103,6 +93,14 @@ def main():
             except KeyboardInterrupt:
                 print(f"cancelled by user")
                 break
+    except psycopg2.OperationalError as e:
+        print_error(f"database connection failed.\n{e}")
+    except Exception as e:
+        print_error(f"unhandled error: {e}")
+    finally:
+        if conn is not None:
+            conn.close()
+            print(f"db disconected.")
 
 if __name__ == "__main__":
     main()
