@@ -21,6 +21,7 @@ $ pip install requirements.txt
 ## Run
 ```shell
 $ export APP_DB_HOST="localhost"
+$ #export APP_DB_HOST_FILE="/tmp/dbpassword.txt"
 $ export APP_DB_PORT="5432"
 $ export APP_DB_USERNAME="username"
 $ #export APP_DB_PASSWORD="password"
