@@ -3,6 +3,7 @@ import os, sys, time
 
 
 env_db_host: str = "APP_DB_HOST"
+env_db_host_file: str = "APP_DB_HOST_FILE"
 env_db_port: str = "APP_DB_PORT"
 env_db_username: str = "APP_DB_USERNAME"
 env_db_password: str = "APP_DB_PASSWORD"
@@ -26,6 +27,7 @@ def print_error(*args, **kwargs):
 
 def main():
     db_host = os.environ.get(env_db_host)
+    db_host_file = os.environ.get(env_db_host_file)
     db_port = os.environ.get(env_db_port, "5432")
     db_username = os.environ.get(env_db_username)
     db_password = os.environ.get(env_db_password)
@@ -35,16 +37,22 @@ def main():
     db_ssl_root_cert_file = os.environ.get(env_db_ssl_root_cert_file)
     loop_interval = os.environ.get(env_db_loop_interval, "5")
 
-    if None in (db_host, db_username):
-        print_error("host and usernanme are required")
+    if None in (db_username, db_dbname):
+        print_error("username and db name are required")
         exit(1)
 
     builder = [
-        f"host={db_host}",
         f"port={db_port}",
         f"user={db_username}",
         f"dbname={db_dbname}",
     ]
+
+    if db_host:
+        builder.append(f"host={db_host}")
+    else:
+        with open(db_host_file) as f:
+            host: str = f.read()
+        builder.append(f"host={host}")
 
     if db_password:
         builder.append(f"password={db_password}")
