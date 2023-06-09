@@ -46,3 +46,18 @@ $ docker run \
     -e APP_LOOP_INTERVAL_SECONDS="3" \
     devsareno/pyping
 ```
+
+## Run Kubernetes
+```shell
+$ kubectl run \
+    --rm -ti \
+    --env APP_DB_HOST="localhost" \
+    --env APP_DB_PORT="5432" \
+    --env APP_DB_USERNAME="username" \
+    --env APP_DB_PASSWORD="password" \
+    --env APP_DB_DBNAME="mydb" \
+    --env APP_LOOP_INTERVAL_SECONDS="3" \
+    --image=devsareno/pyping
+    --restart=Never
+    mypod
+```
