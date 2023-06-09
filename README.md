@@ -51,7 +51,7 @@ $ docker run \
 ```shell
 $ kubectl run \
     --rm -ti \
-    --env APP_DB_HOST="localhost" \
+    --env APP_DB_HOST="mysvc.mynamespace.svc.cluster.local" \
     --env APP_DB_PORT="5432" \
     --env APP_DB_USERNAME="username" \
     --env APP_DB_PASSWORD="password" \
